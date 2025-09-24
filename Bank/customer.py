@@ -8,8 +8,5 @@ class Customer:
         self.first_name = first_name
         self.last_name = last_name
         self.password = password
-<<<<<<< HEAD
         self.account = account 
-=======
-        self.account = account 
->>>>>>> 89bf6f5ee9668a1c1b320b7c625b6b4941107c78
+    
