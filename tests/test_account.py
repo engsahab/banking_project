@@ -1,43 +1,97 @@
 import unittest
-from Bank.account import Account
+from Bank.account import Account 
+
 class TestAccount(unittest.TestCase):
 
-    def test_create_account(self):
-        account = Account(account_id=1001, balance_checking=500, balance_savings=1000)
-        self.assertEqual(account.account_id, 1001)
-        self.assertEqual(account.balance_checking, 500)
-        self.assertEqual(account.balance_savings, 1000)
-        self.assertTrue(account.active,True)
-        self.assertEqual(account.overdraft_count, 0)
+    def setUp(self):
+        self.account = Account(account_id='10001', balance_checking=500.0, balance_savings=1000.0)
 
-    def test_deposit(self):
-        account = Account(account_id=1001)
-        account.deposit(200, "checking")
-        self.assertEqual(account.balance_checking, 200)
-        account.deposit(300, "savings")
-        self.assertEqual(account.balance_savings, 300)
+    
+    def test_deposit_checking_positive_amount(self):
+        
+        self.account.deposit_checking(100)
+        self.assertEqual(self.account.balance_checking, 600)
 
-    def test_withdraw_normal(self):
-        account = Account(account_id=1001, balance_checking=500)
-        account.withdraw(200, "checking")
-        self.assertEqual(account.balance_checking, 300)
+    def test_deposit_savings_positive_amount(self):
+     
+        self.account.deposit_savings(200)
+        self.assertEqual(self.account.balance_savings, 1200)
+    
+    def test_deposit_negative_amount(self):
+       
+        result = self.account.deposit_checking(-50)
+        self.assertFalse(result) 
+        self.assertEqual(self.account.balance_checking, 500)
 
-    def test_transfer(self):
-        account = Account(account_id=1001, balance_checking=500, balance_savings=100)
-        account.transfer(200, "checking", "savings")
-        self.assertEqual(account.balance_checking, 300)
-        self.assertEqual(account.balance_savings, 300)
+    def test_withdraw_checking_sufficient_funds(self):
+        
+        self.account.withdraw_checking(100)
+        self.assertEqual(self.account.balance_checking, 400)
 
-    def test_overdraft(self):
-        account = Account(account_id=1001, balance_checking=50)
-        account.withdraw(70, "checking")  
-        self.assertEqual(account.balance_checking, -55)
-        self.assertEqual(account.overdraft_count, 1)
-        self.assertTrue(account.active)
+    def test_withdraw_savings_insufficient_funds(self):
 
-        account.withdraw(40, "checking") 
-        self.assertFalse(account.active)
-        self.assertEqual(account.overdraft_count, 2)
+        result = self.account.withdraw_savings(1100)
+        self.assertFalse(result)
+        self.assertEqual(self.account.balance_savings, 1000)
 
-if __name__ == "__main__":
+    
+    def test_transfer_from_checking_to_savings(self):
+      
+        self.account.transfer_from_checking_to_savings(100)
+        self.assertEqual(self.account.balance_checking, 400)
+        self.assertEqual(self.account.balance_savings, 1100)
+
+    def test_transfer_from_savings_insufficient_funds(self):
+       
+        result = self.account.transfer_from_savings_to_checking(2000)
+        self.assertFalse(result)
+        self.assertEqual(self.account.balance_savings, 1000)
+        self.assertEqual(self.account.balance_checking, 500)
+
+   
+    def test_overdraft_fee_application(self):
+        
+        self.account.withdraw_checking(520) 
+      
+        self.assertEqual(self.account.balance_checking, -55)
+        self.assertEqual(self.account.overdraft_count, 1)
+
+    def test_exceeding_max_overdraft_limit(self):
+        
+        result = self.account.withdraw_checking(601) 
+        self.assertFalse(result)
+        self.assertEqual(self.account.balance_checking, 500)
+
+    def test_deactivation_after_two_overdrafts(self):
+     
+        self.account.withdraw_checking(510) 
+        self.assertEqual(self.account.balance_checking, -45)
+        self.assertEqual(self.account.overdraft_count, 1)
+        self.assertTrue(self.account.active)
+
+   
+        self.account.withdraw_checking(10) 
+        self.account.deposit_checking(100) 
+        
+    
+        self.account.withdraw_checking(60) 
+        
+        self.assertEqual(self.account.balance_checking, -40)
+        self.assertEqual(self.account.overdraft_count, 2)
+        self.assertFalse(self.account.active) 
+        
+    def test_reactivate_account_on_deposit(self):
+        self.account.active= False
+        self.account.overdraft_count = 2
+        self.account.balance_checking = -50
+        
+        self.account.deposit_checking(100) 
+        
+       
+        self.assertTrue(self.account.active)
+        self.assertEqual(self.account.overdraft_count, 0) 
+        self.assertEqual(self.account.balance_checking, 50)
+
+
+if __name__ == '__main__':
     unittest.main()
