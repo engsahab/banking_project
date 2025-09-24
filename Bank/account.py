@@ -22,6 +22,7 @@ class Account:
         elif account_type == "savings":
             self.balance_savings += amount
 
+<<<<<<< HEAD
     def withdraw(self, amount, account_type):
         self._ensure_positive_amount(amount)
         self._ensure_valid_account_type(account_type)
@@ -40,6 +41,23 @@ class Account:
                 self.active = False
         else:
             setattr(self, f"balance_{account_type}", projected_without_fee)
+=======
+     # Withdraw money from checking or savings with overdraft protection
+    def withdraw(self, amount, account_type):
+        if not self.active:
+            raise ValueError("Account is deactivated due to overdrafts.")       
+        balance = getattr(self, f"balance_{account_type}")
+        if balance - amount < -100:
+            raise ValueError("Cannot withdraw: would exceed overdraft limit of -100")
+        if balance - amount < 0:
+            self.overdraft_count += 1
+            setattr(self, f"balance_{account_type}", balance - amount - 35)
+            print("Overdraft fee $35 applied")
+            if self.overdraft_count >= 2:
+                self.active = False
+        else:
+            setattr(self, f"balance_{account_type}", balance - amount)
+>>>>>>> 89bf6f5ee9668a1c1b320b7c625b6b4941107c78
 
     def transfer(self, amount, from_account, to_account):
         self._ensure_positive_amount(amount)
@@ -61,6 +79,7 @@ class Account:
                 raise ValueError("Insufficient funds in savings")
         else:
             raise ValueError("Invalid account types")
+<<<<<<< HEAD
 
     def get_balance(self, account_type):
         self._ensure_valid_account_type(account_type)
@@ -77,3 +96,5 @@ class Account:
             raise ValueError("Cannot reactivate: balances must be non-negative")
         self.active = True
         self.overdraft_count = 0
+=======
+>>>>>>> 89bf6f5ee9668a1c1b320b7c625b6b4941107c78
