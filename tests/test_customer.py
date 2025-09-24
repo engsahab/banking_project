@@ -12,6 +12,13 @@ class TestCustomer(unittest.TestCase):
         self.assertEqual(customer.password, "s@123")
         self.assertIsNotNone(customer.account)
 
+    def test_full_name_and_password(self):
+        account = Account(account_id=2002)
+        customer = Customer(customer_id=2, first_name="Noura", last_name="Abdullah", password="p@ss", account=account)
+        self.assertEqual(customer.full_name(), "Noura Abdullah")
+        self.assertTrue(customer.verify_password("p@ss"))
+        self.assertFalse(customer.verify_password("wrong"))
+
 if __name__ =="__main__":
     unittest.main()
 
