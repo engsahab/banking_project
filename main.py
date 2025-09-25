@@ -16,7 +16,6 @@ def run_customer_session(bank, customer_account):
         print("7. Logout")
         
         choice = input("Enter your choice: ")
-
  try:
             if choice == '1':
                 amount = float(input("Enter amount to deposit into checking: "))
@@ -53,3 +52,43 @@ def run_customer_session(bank, customer_account):
                 print("Invalid choice. Please try again.")
         except ValueError:
             print("Invalid input. Please enter a valid number for amounts.")
+            
+def main():
+    bank = Bank() 
+    while True:
+        print("\n--- Welcome to ACME Bank ---")
+        print("1. Add New Customer")
+        print("2. Login")
+        print("3. Exit")
+        
+        choice = input("Enter your choice: ")
+        if choice == '1':
+            try:
+                first_name = input("Enter first name: ")
+                last_name = input("Enter last name: ")
+                password = input("Enter a new password: ")
+                start_checking = float(input("Enter initial checking deposit: "))
+                start_savings = float(input("Enter initial savings deposit: "))
+                bank.add_customer(first_name, last_name, password, start_checking, start_savings)
+            except ValueError:
+                print("Invalid amount. Please enter a number for deposits.")
+
+        elif choice == '2':
+            account_id = input("Enter your account ID: ")
+            password = input("Enter your password: ")
+            customer = bank.authenticate(account_id, password)
+            if customer:
+                print(f"\nWelcome, {customer.full_name()}!")
+                customer_account = bank.find_account(account_id)
+                run_customer_session(bank, customer_account)
+            else:
+                print("Authentication failed. Please check your ID and password.")
+        
+        elif choice == '3':
+            print("Thank you for using ACME Bank. Goodbye!")
+            break
+        else:
+            print("Invalid choice. Please select a valid option.")
+
+if __name__ == "__main__":
+    main()
