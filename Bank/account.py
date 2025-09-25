@@ -1,94 +1,98 @@
 class Account:
-    def __init__(self, account_id, balance_checking=0, balance_savings=0):
+
+    OVERDRAFT_FEE = 35.00
+    MAX_OVERDRAFT_LIMIT = -100.00
+    MAX_WITHDRAWAL_WHEN_NEGATIVE = 100.00
+    MAX_OVERDRAFTS_ALLOWED = 2
+
+
+    def __init__(self, account_id: int, balance_checking: float, balance_saving: float, 
+                 overdraft_count = 0, active = True):
         self.account_id = account_id
         self.balance_checking = balance_checking
-        self.balance_savings = balance_savings
-        self.active = True   
-        self.overdraft_count = 0   
+        self.balance_saving = balance_saving
+        self.active = active   
+        self.overdraft_count = overdraft_count  
 
-    def _ensure_valid_account_type(self, account_type):
-        if account_type not in ("checking", "savings"):
-            raise ValueError("Invalid account type")
+    def deposit_checking(self, amount: float):
+        if amount <=0:
+            print("Deposit amount must be more than 0.")
+            return False
+        self.balance_checking += amount
+        return True
 
-    def _ensure_positive_amount(self, amount):
+ 
+    def deposit_savings(self, amount: float):
         if amount <= 0:
-            raise ValueError("Amount must be positive")
+            print("Deposit amount must be more than 0.")
+            return False
+        self.balance_saving += amount
+        return True
+    
 
-    def deposit(self, amount, account_type):
-        self._ensure_positive_amount(amount)
-        self._ensure_valid_account_type(account_type)
-        if account_type == "checking":
+    def withdraw_checking(self, amount: float):
+        if not self.active:
+            print("Account is deactivated due to multiple overdrafts.")
+            return False
+        if amount <= 0:
+            print("Withdrawal amount must be more than 0.")
+            return False
+        if self.balance_checking < 0 and amount > self.MAX_WITHDRAWAL_WHEN_NEGATIVE:
+            print(f"Cannot withdraw more than ${self.MAX_WITHDRAWAL_WHEN_NEGATIVE} when balance is negative.")
+            return False
+        if (self.balance_checking - amount) < self.MAX_OVERDRAFT_LIMIT:
+            print(f"This transaction would exceed the overdraft limit of ${self.MAX_OVERDRAFT_LIMIT}.")
+            return False
+        
+        was_positive = self.balance_checking >= 0  # balance 50 SAR True
+        self.balance_checking -= amount  # 60  balance = -10 SAR
+        is_negative = self.balance_checking < 0  # - 10 < 0  True
+
+        if was_positive and is_negative: #( True and False ) False  
+            print("Applying overdraft fee.")
+            self.balance_checking -= self.OVERDRAFT_FEE  # -10 -35 = -45
+            self.overdraft_count += 1  # overdraft_count 0 +1 = 1
+            if self.overdraft_count >= self.MAX_OVERDRAFTS_ALLOWED:
+                self.deactivate()
+                print("Account has been deactivated due to excessive overdrafts.")
+        return True
+    
+    def withdraw_savings(self, amount: float):
+        if amount <= 0:
+            print("Withdrawal amount must be more than 0.")
+            return False
+        if amount > self.balance_saving:
+            print("Insufficient funds in savings account.")
+            return False
+        self.balance_saving -= amount
+        return True
+
+
+    def transfer_from_checking_to_savings(self, amount: float):
+        if amount <= 0:
+            print("Transfer amount must be more than 0.")
+            return False
+        if self.balance_checking >= amount:
+            self.balance_checking -= amount
+            self.balance_saving += amount
+            print("Transfer successful.")
+            return True
+        else:
+            print("Insufficient funds in checking account for this transfer.")
+            return False
+
+    def transfer_from_savings_to_checking(self, amount: float):
+        if amount <= 0:
+            print("Transfer amount must be more than 0.")
+            return False
+        if self.balance_saving >= amount:
+            self.balance_saving -= amount
             self.balance_checking += amount
-        elif account_type == "savings":
-            self.balance_savings += amount
-
-    def withdraw(self, amount, account_type):
-        self._ensure_positive_amount(amount)
-        self._ensure_valid_account_type(account_type)
-        if not self.active:
-            raise ValueError("Account is deactivated due to overdrafts.")
-
-        balance = getattr(self, f"balance_{account_type}")
-        projected_without_fee = balance - amount
-        if projected_without_fee < -100:
-            raise ValueError("Cannot withdraw: would exceed overdraft limit of -100")
-        if projected_without_fee < 0:
-            self.overdraft_count += 1
-            print("Overdraft fee $35 applied")
-            setattr(self, f"balance_{account_type}", projected_without_fee - 35)
-            if self.overdraft_count >= 2:
-                self.active = False
+            print("Transfer successful.")
+            return True
         else:
-            setattr(self, f"balance_{account_type}", projected_without_fee)   
-     # Withdraw money from checking or savings with overdraft protection
-    def withdraw(self, amount, account_type):
-        if not self.active:
-            raise ValueError("Account is deactivated due to overdrafts.")       
-        balance = getattr(self, f"balance_{account_type}")
-        if balance - amount < -100:
-            raise ValueError("Cannot withdraw: would exceed overdraft limit of -100")
-        if balance - amount < 0:
-            self.overdraft_count += 1
-            setattr(self, f"balance_{account_type}", balance - amount - 35)
-            print("Overdraft fee $35 applied")
-            if self.overdraft_count >= 2:
-                self.active = False
-        else:
-            setattr(self, f"balance_{account_type}", balance - amount)
+            print("Insufficient funds in savings account for this transfer.")
+            return False
 
-    def transfer(self, amount, from_account, to_account):
-        self._ensure_positive_amount(amount)
-        self._ensure_valid_account_type(from_account)
-        self._ensure_valid_account_type(to_account)
-        if from_account == to_account:
-            raise ValueError("from_account and to_account must be different")
-        if from_account == "checking" and to_account == "savings":
-            if amount <= self.balance_checking:
-                self.balance_checking -= amount
-                self.balance_savings += amount
-            else:
-                raise ValueError("Insufficient funds in checking")
-        elif from_account == "savings" and to_account == "checking":
-            if amount <= self.balance_savings:
-                self.balance_savings -= amount
-                self.balance_checking += amount
-            else:
-                raise ValueError("Insufficient funds in savings")
-        else:
-            raise ValueError("Invalid account types")
-
-    def get_balance(self, account_type):
-        self._ensure_valid_account_type(account_type)
-        return getattr(self, f"balance_{account_type}")
-
-    def get_balances(self):
-        return {
-            "checking": self.balance_checking,
-            "savings": self.balance_savings,
-        }
-
-    def reactivate(self):
-        if self.balance_checking < 0 or self.balance_savings < 0:
-            raise ValueError("Cannot reactivate: balances must be non-negative")
-        self.active = True
-        self.overdraft_count = 0
+    def deactivate(self):
+        self.active = False
