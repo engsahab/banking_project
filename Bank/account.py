@@ -15,7 +15,7 @@ class Account:
 
     def deposit_checking(self, amount: float):
         if amount <= 0:
-            print("Error: Deposit amount must be positive.")
+            print("Error: Deposit amount must be more than 0.")
             return False
         self.balance_checking += amount
         return True
