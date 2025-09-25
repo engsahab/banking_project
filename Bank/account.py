@@ -22,17 +22,17 @@ class Account:
 
     def deposit_savings(self, amount: float):
         if amount <= 0:
-            print("Error: Deposit amount must be positive.")
+            print("Error: Deposit amount must be more than 0.")
             return False
         self.balance_savings += amount
         return True
     
     def withdraw_checking(self, amount: float):
         if not self.active:
-            print("Error: Account is deactivated due to multiple overdrafts.")
+            print("Error: Account is deactivated because to multiple overdrafts.")
             return False
         if amount <= 0:
-            print("Error: Withdrawal amount must be positive.")
+            print("Error: Withdrawal amount must be more than 0.")
             return False
         if self.balance_checking < 0 and amount > self.MAX_WITHDRAWAL_WHEN_NEGATIVE:
             print(f"Error: Cannot withdraw more than ${self.MAX_WITHDRAWAL_WHEN_NEGATIVE} when balance is negative.")
