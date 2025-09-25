@@ -78,8 +78,11 @@ def main():
             password = input("Enter your password: ")
             customer = bank.authenticate(account_id, password)
             if customer:
-                print(f"\nWelcome, {customer.full_name()}!")
                 customer_account = bank.find_account(account_id)
+                if not customer_account.active:
+                print("Your account is deactivated due to multiple overdrafts.")
+                else:
+                print(f"\nWelcome, {customer.full_name()}!")
                 run_customer_session(bank, customer_account)
             else:
                 print("Authentication failed. Please check your ID and password.")
