@@ -2,7 +2,7 @@
 from Bank.account import Account
 
 class Customer:
-    def __init__(self,  account_id, first_name, last_name, password):
+    def __init__(self,  account_id,  first_name, last_name, password):
         self.account_id = account_id
         self.first_name = first_name
         self.last_name = last_name
