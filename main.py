@@ -17,3 +17,39 @@ def run_customer_session(bank, customer_account):
         
         choice = input("Enter your choice: ")
 
+ try:
+            if choice == '1':
+                amount = float(input("Enter amount to deposit into checking: "))
+                if customer_account.deposit_checking(amount):
+                    print("Deposit successful.")
+                    bank.save_data()
+            elif choice == '2':
+                amount = float(input("Enter amount to deposit into savings: "))
+                if customer_account.deposit_savings(amount):
+                    print("Deposit successful.")
+                    bank.save_data()
+            elif choice == '3':
+                amount = float(input("Enter amount to withdraw from checking: "))
+                if customer_account.withdraw_checking(amount):
+                    print("Withdrawal successful.")
+                    bank.save_data()
+            elif choice == '4':
+                amount = float(input("Enter amount to withdraw from savings: "))
+                if customer_account.withdraw_savings(amount):
+                    print("Withdrawal successful.")
+                    bank.save_data()
+            elif choice == '5':
+                amount = float(input("Enter amount to transfer to savings: "))
+                if customer_account.transfer_from_checking_to_savings(amount):
+                    bank.save_data() 
+            elif choice == '6':
+                amount = float(input("Enter amount to transfer to checking: "))
+                if customer_account.transfer_from_savings_to_checking(amount):
+                    bank.save_data() 
+            elif choice == '7':
+                print("Logging out...")
+                break
+            else:
+                print("Invalid choice. Please try again.")
+        except ValueError:
+            print("Invalid input. Please enter a valid number for amounts.")
