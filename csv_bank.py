@@ -1,4 +1,4 @@
-import csv
+from Bank.csv_bank import Bank
 from Bank.customer import Customer
 from Bank.account import Account
 
@@ -28,7 +28,7 @@ try:
                         balance_checking=float(row['balance_checking']),
                         balance_savings=float(row['balance_savings']),
                         overdraft_count=int(row.get('overdraft_count', 0)),
-                        is_active=row.get('is_active', 'True') == 'True'
+                        is_active=row.get('active', 'True') == 'True'
                     )
                     
                     self.customers[row['account_id']] = customer
