@@ -4,19 +4,18 @@ from Bank.account import Account
 
 def run_customer_session(bank, customer_account):
     while True:
-        print("\n Menu: ")
+        print("\n Menu : ")
         print(f"Checking Balance: ${customer_account.balance_checking:,.2f}")
         print(f"Savings Balance:  ${customer_account.balance_savings:,.2f}")
         print("1. Deposit to Checking")
-        print("2.Deposit to Savings.")
-        print("3. Withdraw from checking ")
-        print("4.Withdraw from Savings")
+        print("2. Deposit to Savings")
+        print("3. Withdraw from Checking")
+        print("4. Withdraw from Savings")
         print("5. Transfer from Checking to Savings")
         print("6. Transfer from Savings to Checking")
         print("7. Logout")
-        
-        choice = input("Enter your number: ")
 
+        choice = input("Enter your choice : ")
         try:
             if choice == '1':
                 amount = float(input("Enter amount to deposit into checking: "))
@@ -41,11 +40,13 @@ def run_customer_session(bank, customer_account):
             elif choice == '5':
                 amount = float(input("Enter amount to transfer to savings: "))
                 if customer_account.transfer_from_checking_to_savings(amount):
-                    bank.save_data() 
+                    print("Transfer successful.")
+                    bank.save_data()
             elif choice == '6':
                 amount = float(input("Enter amount to transfer to checking: "))
                 if customer_account.transfer_from_savings_to_checking(amount):
-                    bank.save_data() 
+                    print("Transfer successful.")
+                    bank.save_data()
             elif choice == '7':
                 print("Logging out...")
                 break
@@ -54,16 +55,16 @@ def run_customer_session(bank, customer_account):
         except ValueError:
             print("Invalid input. Please enter a valid number for amounts.")
 
+
 def main():
-    bank = Bank() 
+    bank = Bank()
     while True:
         print("\n--- Welcome to ACME Bank ---")
         print("1. Add New Customer")
         print("2. Login")
         print("3. Exit")
-        
-        choice = input("Enter your choice: ")
 
+        choice = input("Enter your choice: ")
         if choice == '1':
             try:
                 first_name = input("Enter first name: ")
@@ -78,7 +79,6 @@ def main():
         elif choice == '2':
             account_id = input("Enter your account ID: ")
             password = input("Enter your password: ")
-            
             customer = bank.authenticate(account_id, password)
             if customer:
                 customer_account = bank.find_account(account_id)
@@ -89,13 +89,13 @@ def main():
                     run_customer_session(bank, customer_account)
             else:
                 print("Authentication failed. Please check your ID and password.")
-        
+
         elif choice == '3':
             print("Thank you for using ACME Bank. Goodbye!")
             break
-        
         else:
             print("Invalid choice. Please select a valid option.")
 
-if __name__ == "__main__":
+
+if __name__== "__main__":
     main()

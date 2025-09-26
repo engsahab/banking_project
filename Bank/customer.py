@@ -13,3 +13,4 @@ class Customer:
     
     def verify_password(self,password_to_check):
             return self.password == password_to_check
+            return self.password == password_to_check
