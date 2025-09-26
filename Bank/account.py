@@ -1,175 +1,96 @@
 class Account:
-
-    OVERDRAFT_FEE = 35.00
-    MAX_OVERDRAFT_LIMIT = -100.00
-    MAX_WITHDRAWAL_WHEN_NEGATIVE = 100.00
-    MAX_OVERDRAFTS_ALLOWED = 2
+ 
+ # These are the constants
+    overedraft_fee = 35.00
+    max_overdraft_limt = -100.00
+    max_withdraw_if_negative = 100.00
+    overdrsft_attempts = 2
 
     def __init__(self, account_id: int, balance_checking: float, balance_saving: float, 
                  overdraft_count = 0, active = True):
         self.account_id = account_id
         self.balance_checking = balance_checking
         self.balance_saving = balance_saving
-
-    def __init__(self, account_id: int, balance_checking: float, balance_savings: float, 
-                 overdraft_count = 0, active = True):
-        self.account_id = account_id
-        self.balance_checking = balance_checking
-        self.balance_savings = balance_savings
-
         self.active = active   
-        self.overdraft_count = overdraft_count  
-
+        self. overdraft_count= overdraft_count  
+        
+#debosit
     def deposit_checking(self, amount: float):
-
-        if amount <=0:
+        if amount <= 0:                               # if the deposiit amount is lees 0 the proocess will stop
             print("Deposit amount must be more than 0.")
             return False
-        self.balance_checking += amount
+        self.balance_checking += amount               # if it is great than 0 take the balance and add it to the exiting amounnt
         return True
 
- 
-    def deposit_savings(self, amount: float):
-        if amount <= 0:
+    def deposit_saving(self, amount: float):  
+        if amount <= 0:                                # some prooses as checking
             print("Deposit amount must be more than 0.")
             return False
-        self.balance_saving += amount
+        self.balance_saving += amount                   # //
         return True
     
-
+    # withdraw
     def withdraw_checking(self, amount: float):
-        if not self.active:
-            print("Account is deactivated due to multiple overdrafts.")
-            return False
-        if amount <= 0:
-            print("Withdrawal amount must be more than 0.")
-            return False
-        if self.balance_checking < 0 and amount > self.MAX_WITHDRAWAL_WHEN_NEGATIVE:
-            print(f"Cannot withdraw more than ${self.MAX_WITHDRAWAL_WHEN_NEGATIVE} when balance is negative.")
-            return False
-        if (self.balance_checking - amount) < self.MAX_OVERDRAFT_LIMIT:
-            print(f"This transaction would exceed the overdraft limit of ${self.MAX_OVERDRAFT_LIMIT}.")
-            return False
-        
-        was_positive = self.balance_checking >= 0  # balance 50 SAR True
-        self.balance_checking -= amount  # 60  balance = -10 SAR
-        is_negative = self.balance_checking < 0  # - 10 < 0  True
+     if not self.active:                               # if the acount is cancaelled due to execting the two attempts we will not be able to withdraw
+        print("Account is deactivated due to multiple overdrafts.")
+        return False
 
-        if was_positive and is_negative: #( True and False ) False  
-            print("Applying overdraft fee.")
-            self.balance_checking -= self.OVERDRAFT_FEE  # -10 -35 = -45
-            self.overdraft_count += 1  # overdraft_count 0 +1 = 1
+     if amount <= 0:                                  ## some prooses as deposit checking
+        print("Withdrawal amount must be more than 0.")
+        return False
 
-        if amount <= 0:
-            print("Error: Deposit amount must be more than 0.")
-            return False
-        self.balance_checking += amount
-        return True
+     if self.balance_checking < 0 and amount > self.max_withdraw_if_negative:
+        print(f"Cannot withdraw more than ${self.max_withdraw_if_negative} when balance is negative.")
+        return False
 
-    def deposit_savings(self, amount: float):
-        if amount <= 0:
-            print("Error: Deposit amount must be more than 0.")
-            return False
-        self.balance_savings += amount
-        return True
+     if (self.balance_checking - amount) < self.max_overdraft_limt:
+        print(f"This transaction would exceed the overdraft limit of ${self.max_overdraft_limt}.")
+        return False
+
+     balanse_before = self.balance_checking  # balance 50 SAR True
+     self.balance_checking -= amount
+     balanse_after = self.balance_checking < 0  # - 10 < 0  True
+
+     if balanse_before >= 0 and balanse_after: #( True and True )  
+        print("Applying overdraft fee")
+        self.balance_checking -= self.overedraft_fee
+        self.overdraft_count += 1
+        if self.overdraft_count >= self.overdrsft_attempts:
+            self.deactivate()
+     return True
     
-    def withdraw_checking(self, amount: float):
-        if not self.active:
-            print("Error: Account is deactivated because to multiple overdrafts.")
-            return False
+    def withdraw_saving(self, amount: float):
         if amount <= 0:
-            print("Error: Withdrawal amount must be more than 0.")
-            return False
-        if self.balance_checking < 0 and amount > self.MAX_WITHDRAWAL_WHEN_NEGATIVE:
-            print(f"Error: Cannot withdraw more than ${self.MAX_WITHDRAWAL_WHEN_NEGATIVE} when balance is negative.")
-            return False
-        if (self.balance_checking - amount) < self.MAX_OVERDRAFT_LIMIT:
-            print(f"Error: This transaction would exceed the overdraft limit of ${self.MAX_OVERDRAFT_LIMIT}.")
-            return False
-        
-        was_positive = self.balance_checking >= 0
-        self.balance_checking -= amount
-        is_negative = self.balance_checking < 0
-
-        if was_positive and is_negative:
-            print("Applying overdraft fee.")
-            self.balance_checking -= self.OVERDRAFT_FEE
-            self.overdraft_count += 1
-
-            if self.overdraft_count >= self.MAX_OVERDRAFTS_ALLOWED:
-                self.deactivate()
-                print("Account has been deactivated due to excessive overdrafts.")
-        return True
-    
-    def withdraw_savings(self, amount: float):
-        if amount <= 0:
-
-            print("Withdrawal amount must be more than 0.")
+            print(" Withdrawal amount must be more than 0")
             return False
         if amount > self.balance_saving:
-            print("Insufficient funds in savings account.")
+            print(" Insufficient funds in saving account")
             return False
         self.balance_saving -= amount
         return True
 
-
-    def transfer_from_checking_to_savings(self, amount: float):
+    def transfer_from_checking_to_saving(self, amount: float):
         if amount <= 0:
-            print("Transfer amount must be more than 0.")
+            print(" transfer amount must be more than 0")
             return False
         if self.balance_checking >= amount:
             self.balance_checking -= amount
             self.balance_saving += amount
-            print("Transfer successful.")
             return True
         else:
-            print("Insufficient funds in checking account for this transfer.")
+            print(" Insufficient funds in checking account for this transfer ")
             return False
 
-    def transfer_from_savings_to_checking(self, amount: float):
+    def transfer_from_saving_to_checking(self, amount: float):
         if amount <= 0:
-            print("Transfer amount must be more than 0.")
+            print(" transfer amount must be more than 0 ")
             return False
         if self.balance_saving >= amount:
             self.balance_saving -= amount
             self.balance_checking += amount
-            print("Transfer successful.")
             return True
         else:
-            print("Insufficient funds in savings account for this transfer.")
-
-            print("Error: Withdrawal amount must be positive.")
-            return False
-        if amount > self.balance_savings:
-            print("Error: Insufficient funds in savings account.")
-            return False
-        self.balance_savings -= amount
-        return True
-        
-    def transfer_from_checking_to_savings(self, amount: float):
-        if amount <= 0:
-            print("Error: Transfer amount must be positive.")
-            return False
-        if self.balance_checking >= amount:
-            self.balance_checking -= amount
-            self.balance_savings += amount
-            print("Transfer successful.")
-            return True
-        else:
-            print("Error: Insufficient funds in checking account for this transfer.")
-            return False
-
-    def transfer_from_savings_to_checking(self, amount: float):
-        if amount <= 0:
-            print("Error: Transfer amount must be positive.")
-            return False
-        if self.balance_savings >= amount:
-            self.balance_savings -= amount
-            self.balance_checking += amount
-            print("Transfer successful.")
-            return True
-        else:
-            print("Error: Insufficient funds in savings account for this transfer.")
+            print("Withdrawal amount must be more than 0 ")
             return False
 
     def deactivate(self):

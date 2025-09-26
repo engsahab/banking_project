@@ -5,8 +5,8 @@ import csv
 class Bank:
     def _init_(self, filepath='bank.csv'):
         self.filepath = filepath
-        self.customers = {}  # key: account_id, value: Customer instance
-        self.accounts = {}   # key: account_id, value: Account instance
+        self.customers = {}  
+        self.accounts = {}
         self.load_data()
 
     def load_data(self):
@@ -23,14 +23,14 @@ class Bank:
                     account = Account(
                         account_id=row['account_id'],
                         balance_checking=float(row['balance_checking']),
-                        balance_savings=float(row['balance_savings']),
+                        balance_saving=float(row['balance_saving']),
                         overdraft_count=int(row.get('overdraft_count', 0)),
                         active=row.get('active', 'True') == 'True'
                     )
                     self.customers[row['account_id']] = customer
                     self.accounts[row['account_id']] = account
         except FileNotFoundError:
-            print("Info: bank.csv not found. A new one will be created upon saving.")
+            print(" bank.csv not found A new one will be created upon saving ")
         except Exception as e:
             print(f"An error occurred while loading data: {e}")
 
@@ -39,7 +39,7 @@ class Bank:
             with open(self.filepath, mode='w', newline='') as file:
                 header = [
                     'account_id', 'first_name', 'last_name', 'password',
-                    'balance_checking', 'balance_savings', 'overdraft_count', 'active'
+                    'balance_checking', 'balance_saving', 'overdraft_count', 'active'
                 ]
                 writer = csv.DictWriter(file, fieldnames=header)
                 writer.writeheader()
@@ -52,7 +52,7 @@ class Bank:
                         'last_name': customer.last_name,
                         'password': customer.password,
                         'balance_checking': account.balance_checking,
-                        'balance_savings': account.balance_savings,
+                        'balance_saving': account.balance_saving,
                         'overdraft_count': account.overdraft_count,
                         'active': account.active
                     })
@@ -71,7 +71,7 @@ class Bank:
 
     def _generate_account_id(self):
         if not self.customers:
-            return '10001'  # starting account ID
+            return '10001'  
         last_id = max([int(id) for id in self.customers.keys()])
         return str(last_id + 1)
 

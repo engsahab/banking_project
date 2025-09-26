@@ -25,7 +25,7 @@ class Bank:
                     account = Account(
                         account_id=row['account_id'],
                         balance_checking=float(row['balance_checking']),
-                        balance_savings=float(row['balance_savings']),
+                        balance_saving=float(row['balance_saving']),
                         overdraft_count=int(row.get('overdraft_count', 0)),
                         active=row.get('active', 'True') == 'True'
                     )
@@ -42,7 +42,7 @@ class Bank:
             with open(self.filepath, mode='w', newline='') as file:
                 header = [
                     'account_id', 'first_name', 'last_name', 'password', 
-                    'balance_checking', 'balance_savings', 'overdraft_count', 'active'
+                    'balance_checking', 'balance_saving', 'overdraft_count', 'active'
                 ]
                 writer = csv.DictWriter(file, fieldnames=header)
                 writer.writeheader()
@@ -55,7 +55,7 @@ class Bank:
                         'last_name': customer.last_name,
                         'password': customer.password, 
                         'balance_checking': account.balance_checking,
-                        'balance_savings': account.balance_savings,
+                        'balance_saving': account.balance_saving,
                         'overdraft_count': account.overdraft_count,
                         'active': account.active
                     })
