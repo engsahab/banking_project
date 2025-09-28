@@ -57,7 +57,7 @@ class Bank:
                         'active': account.active
                     })
         except Exception as e:
-            print(f"An error occurred while saving data: {e}")
+            print(f"an arror ccurred while saving data: {e}")
 
     def add_customer(self, first_name, last_name, password, start_checking, start_savings):
         new_id = self._generate_account_id()
@@ -66,7 +66,7 @@ class Bank:
         self.customers[new_id] = customer
         self.accounts[new_id] = account
         self.save_data()
-        print(f"Customer {first_name} {last_name} added successfully with Account ID: {new_id}")
+        print(f"Customer {first_name} {last_name} added successfully with Account id{new_id}")
         return customer
 
     def _generate_account_id(self):

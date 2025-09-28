@@ -1,3 +1,7 @@
 account_id,first_name,last_name,password,balance_checking,balance_saving,overdraft_count,active
 10001,sahab,alfahad,1234,-135.0,200.0,1,True
 10002,majed,alfahad,123,-36.0,50.0,1,True
+10003,sahab,alfahad,1234,-36.0,50.0,1,True
+10004,sara,alhharbi,1234,-135.0,40.0,1,True
+10005,Rakan,alharbi,12345,-36.0,40.0,2,False
+10006,huda,alharbi,123456,-36.0,40.0,1,True

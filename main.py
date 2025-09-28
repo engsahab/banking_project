@@ -70,8 +70,8 @@ def main():
                 print("invalid amout Please enter a number for deposit ")
 
         elif choice == '2':
-            account_id = input("  your id ")
-            password = input(" your password ")
+            account_id = input(" id ")
+            password = input("  password ")
             customer = bank.authenticate(account_id, password)
             if customer:
                 customer_account = bank.find_account(account_id)
